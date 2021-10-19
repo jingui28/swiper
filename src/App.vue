@@ -1,30 +1,142 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div class="app">
+    <div class="leftArrow" @click="leftMove()"><button> 《 </button></div>
+    <div class="container" :style="{left: imgLeft + 'px'}">
+      <div  class="image" v-for="(item, index) in list" :key="index">
+        <img :src="require('@/assets/' + item)" />
+      </div>
+    </div>
+    <div class="rightArrow" @click="rightMove()"><button> 》 </button></div>
+    <div class="dots">
+      <div class="dot" :class="{active: index === currentPage}" v-for="(item, index) in list" :key="index">
+      </div>
+    </div>
   </div>
-  <router-view/>
 </template>
 
+<script lang="ts">
+export default {
+  name: 'App',
+  data () {
+    return {
+      list: ['1.png', '2.png', '3.png'],
+      imgLeft: 0,
+      timeval: 1,
+      currentPage: 0
+    }
+  },
+  methods: {
+    leftMove () {
+      let moveDist = 0
+      if (this.imgLeft <= -800 * (this.list.length - 1)) {
+        this.imgLeft = -800 * (this.list.length - 1)
+      } else {
+        setInterval(() => {
+          if (moveDist <= -800) {
+            clearInterval()
+          } else {
+            moveDist -= Math.round(8 / this.timeval)
+            this.imgLeft -= Math.round(8 / this.timeval)
+          }
+        }, 10)
+        this.currentPage++
+      }
+    },
+
+    rightMove () {
+      let moveDist = 0
+      if (this.imgLeft >= 0) {
+        this.imgLeft = 0
+      } else {
+        setInterval(() => {
+          if (moveDist >= 800) {
+            clearInterval()
+          } else {
+            moveDist += Math.round(8 / this.timeval)
+            this.imgLeft += Math.round(8 / this.timeval)
+          }
+        }, 10)
+        this.currentPage--
+      }
+    }
+  }
+}
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.app {
+  position: relative;
+  width: 800px;
+  height: 600px;
+  margin: 200px auto;
+  overflow: hidden;
+}
+
+button {
+  width: 50px;
+  height: 100px;
+  font-size: 30px;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  background-color: rgba(0,0,0,0.2);
+}
+
+button:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+.leftArrow {
+  position: absolute;
+  top: 242px;
+  left: 0px;
+  z-index: 5;
+}
+
+.rightArrow {
+  position: absolute;
+  top: 242px;
+  left: 750px;
+  z-index: 5;
+}
+
+.container {
+  position: absolute;
+  top: 0;
+  left: 0px;
+  width: 2400px;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.image {
+  width: 800px;
+  /* height: 600px; */
+  font-size: 100px;
+}
+
+img {
+  width: 800px;
+}
+
+.dots {
+  position: absolute;
+  bottom: 20px;
+  right: 50px;
+}
+
+.dot {
+  float: left;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
   text-align: center;
-  color: #2c3e50;
+  border-radius: 50%;
+  background: #aaa;
+  margin-right: 10px;
 }
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.active {
+  background: red;
 }
 </style>
